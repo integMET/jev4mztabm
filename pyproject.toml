@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jev4mztabm"
+dynamic = ["version"]
+description = "Reproducible metabolomics study-factor exports, ontology analysis and Jev annotation"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+keywords = ["metabolomics", "ontology", "MetaboLights", "Metabolomics Workbench", "Jev"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+
+[project.optional-dependencies]
+analysis = ["matplotlib>=3.8,<4"]
+jev = ["typesafe-sdk==0.7.5"]
+all = ["matplotlib>=3.8,<4", "typesafe-sdk==0.7.5"]
+dev = ["build>=1.2,<2"]
+
+[project.urls]
+Repository = "https://github.com/integMET/jev4mztabm"
+Issues = "https://github.com/integMET/jev4mztabm/issues"
+
+[project.scripts]
+jev4mztabm = "jev4mztabm.cli:main"
+metabolights-factors = "jev4mztabm.metabolights_factors:main"
+workbench-factors = "jev4mztabm.workbench_factors:main"
+ontology-accessions = "jev4mztabm.analyze_ontology_accessions:main"
+workbench-jev = "jev4mztabm.workbench_jev:main"
+calibrate-workbench-jev = "jev4mztabm.calibrate_workbench_jev:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["jev4mztabm*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+jev4mztabm = ["data/*.csv", "data/*.json"]
+
+[tool.setuptools.dynamic]
+version = {attr = "jev4mztabm.__version__"}

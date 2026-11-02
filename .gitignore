@@ -1,0 +1,14 @@
+__pycache__/
+results/
+runs/
+.venv-jev/
+.venv/
+venv/
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.env
+.env.*
+!.env.example
+*.key

@@ -1,0 +1,42 @@
+{
+  "snapshot_date": "2026-11-02",
+  "metabolights": {
+    "factor_rows": 7505,
+    "studies": 3610,
+    "efo_selected_rows": 3566,
+    "distinct_selected_accessions": 156
+  },
+  "workbench": {
+    "factor_rows": 9321,
+    "studies": 4684,
+    "distinct_group_values": 49702,
+    "factor_csv_sha256": "6590972941382ae9b110478f005edb4b25c5e217d35541e274f51440b949dfce"
+  },
+  "catalog": {
+    "catalog_id": "7f10b5978d37db9abaa71ca9aff69fe0908ca9d96364afe21113144adc486806",
+    "term_count": 156,
+    "statuses": {
+      "eligible": 114,
+      "obsolete": 41,
+      "out_of_namespace": 1
+    }
+  },
+  "jev": {
+    "model": "jev-1.14.0",
+    "sdk_version": "0.7.5",
+    "prompt_version": "workbench-factors-v1",
+    "attempted_rows": 9321,
+    "statuses": {
+      "needs_review": 6608,
+      "mixed_factor": 821,
+      "unmapped": 533,
+      "ambiguous": 338,
+      "error": 1021
+    },
+    "accepted_mappings": 0,
+    "study_context_rows": 113,
+    "study_context_studies": 39,
+    "incomplete_reason": "HTTP 402: organization API credits exhausted"
+  },
+  "note": "Observed reference run, not guaranteed counts for fresh public-API exports. Raw data and model responses are not bundled."
+}
