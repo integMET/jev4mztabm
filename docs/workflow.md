@@ -124,6 +124,56 @@ in their original order. The source CSV is unchanged. In this mode,
 `percent_of_selected_factors` uses retained rows as its denominator, while
 `percent_of_all_factors` still uses all original rows.
 
+## Metabolomics Workbench treatments
+
+```sh
+jev4mztabm workbench-treatments --output-dir results/workbench/treatments
+# A small selection, without the discovery request:
+jev4mztabm workbench-treatments --studies ST000004 ST002115 --output-dir runs/treatments-pilot
+```
+
+The default selects every unique public study from
+`GET /rest/study/study_id/ST/available`, including studies with multiple analyses.
+It retrieves the HTML Treatment tab of each study's
+[metadata page](https://www.metabolomicsworkbench.org/data/DRCCMetadata.php?Mode=Study&StudyID=ST002115&StudyType=MS&ResultType=1&DataMode=TreatmentData).
+The `Treatment ID:` field is unavailable in mwTab JSON. Study and treatment
+accessions need not share a numeric suffix: ST002115 has TR002243.
+The exporter verifies the study heading and treatment section, checks the
+accessions, and rejects conflicting duplicate fields and error pages returned
+with HTTP 200.
+
+- `treatments.csv` has exactly `study_id`, `treatment_id`, and
+  `treatment_summary`, with one row per study/treatment pair in study accession
+  order. Every selected study has at least one row. When the source lists several
+  Treatment IDs, each retains its associated summary on a separate row; no record
+  is selected or discarded based on the narrative. Exact duplicate records are
+  deduplicated, and conflicting summaries for the same ID are rejected.
+  An absent field is blank. The separate `Treatment:` field is never used as a
+  summary. Literal summaries such as `NA` remain text. HTML entities are decoded,
+  inline markup is removed, formatting whitespace is collapsed, and explicit
+  HTML line/paragraph breaks remain newlines inside properly quoted CSV cells.
+- `treatment_status.csv` has one row per study with `study_id`, `status`,
+  `treatment_count`, `source`, `source_url`, and
+  `error`. Status is `ok`, `missing_summary`, `missing_treatment_id`,
+  `no_treatment` (an empty treatment section), `fetch_error`, `parse_error`, or
+  `cache_error`. Failed studies retain a blank data row. Missing metadata is a
+  successful retrieval; failures cause exit code 1. Setup/discovery errors cause
+  exit code 2.
+- `.cache/treatments/` retains raw HTML pages. Valid pages are reused; invalid
+  pages are retried. `--refresh` bypasses valid caches. `.cache/study_listing.json`
+  records the public listing when discovery is used. `run_metadata.json` records
+  the selected IDs, timestamps, request settings, and failure count.
+
+The shared client defaults to four workers and a minimum of 0.25 seconds between
+request starts, retries transient network/HTTP errors, and respects HTTP 429
+backoff. Use `--workers`, `--interval`, `--timeout`, `--retries`, and `--limit` to
+adjust the run. `python -m jev4mztabm workbench-treatments`, the installed
+`workbench-treatments` alias, and `python workbench_treatments.py` expose the same
+options. The package has no additional runtime dependencies for this export.
+
+For the full command, recorded snapshot checks, and offline CSV regeneration,
+see [reproducing the treatment table](reproducibility.md#reproduce-resultsworkbenchtreatmentstreatmentscsv).
+
 ## Metabolomics Workbench export
 
 Export all public [Metabolomics Workbench](https://www.metabolomicsworkbench.org/)

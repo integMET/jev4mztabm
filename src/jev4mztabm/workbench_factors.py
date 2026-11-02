@@ -266,18 +266,26 @@ class WorkbenchClient:
             self._last_request = time.monotonic()
 
     def get_json(self, path):
-        request = Request(API_URL + "/" + path.lstrip("/"), headers={
-            "Accept": "application/json", "User-Agent": "workbench-factor-export/1.0",
+        native = path.rstrip("/").endswith("/mwtab")
+        timeout = max(120, self.timeout) if native else self.timeout
+        decode = (lambda response: decode_mwtab_json(response.read())) if native else json.load
+        return self._get(API_URL + "/" + path.lstrip("/"), decode, "application/json", timeout)
+
+    def get_text(self, url):
+        """Read a public metadata page with the same retries and request limit."""
+        return self._get(url, lambda response: response.read().decode(
+            response.headers.get_content_charset() or "utf-8"), "text/html", self.timeout)
+
+    def _get(self, url, decode, accept, timeout):
+        request = Request(url, headers={
+            "Accept": accept, "User-Agent": "workbench-factor-export/1.0",
         })
         for attempt in range(self.retries + 1):
             self._wait_for_slot()
             try:
-                timeout = max(120, self.timeout) if path.rstrip("/").endswith("/mwtab") else self.timeout
                 with urlopen(request, timeout=timeout) as response:
                     # JSON parsing also rejects HTML/text errors returned with HTTP 200.
-                    if path.rstrip("/").endswith("/mwtab"):
-                        return decode_mwtab_json(response.read())
-                    return json.load(response)
+                    return decode(response)
             except HTTPError as error:
                 delay = _retry_delay(error, attempt)
                 error.close()

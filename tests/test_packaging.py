@@ -22,11 +22,11 @@ REPOSITORY = Path(__file__).resolve().parents[1]
 MODULES = (
     "metabolights_factors", "analyze_ontology_accessions", "workbench_factors",
     "workbench_mapping", "workbench_structured", "workbench_ontology_catalog",
-    "workbench_jev", "calibrate_workbench_jev",
+    "workbench_jev", "calibrate_workbench_jev", "workbench_treatments",
 )
 ENTRY_POINTS = (
     "jev4mztabm", "metabolights-factors", "workbench-factors",
-    "ontology-accessions", "workbench-jev", "calibrate-workbench-jev",
+    "ontology-accessions", "workbench-jev", "calibrate-workbench-jev", "workbench-treatments",
 )
 
 
@@ -139,7 +139,7 @@ class InstalledWheelTests(unittest.TestCase):
         for name in ENTRY_POINTS:
             with self.subTest(entry_point=name):
                 self.assertIn("usage:", self.run_installed([self.executable(name), "--help"]).lower())
-        for command in ("metabolights", "workbench", "analyze", "jev", "calibrate", "reproduce", "snapshot"):
+        for command in ("metabolights", "workbench", "workbench-treatments", "analyze", "jev", "calibrate", "reproduce", "snapshot"):
             with self.subTest(command=command):
                 self.assertIn("usage:", self.run_installed([self.executable("jev4mztabm"), command, "--help"]).lower())
         self.assertIn("usage:", self.run_installed([self.python, "-I", "-m", "jev4mztabm", "--help"]).lower())

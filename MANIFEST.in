@@ -1,6 +1,7 @@
 include README.md pyproject.toml requirements-analysis.txt requirements-jev.txt
 include metabolights_factors.py analyze_ontology_accessions.py
 include workbench_factors.py workbench_structured.py workbench_mapping.py
+include workbench_treatments.py
 include workbench_ontology_catalog.py workbench_jev.py calibrate_workbench_jev.py
 include uv.lock
 recursive-include src/jev4mztabm/data *.csv *.json

@@ -10,6 +10,7 @@ from . import __version__
 COMMANDS = {
     "metabolights": "metabolights_factors",
     "workbench": "workbench_factors",
+    "workbench-treatments": "workbench_treatments",
     "analyze": "analyze_ontology_accessions",
     "jev": "workbench_jev",
     "calibrate": "calibrate_workbench_jev",

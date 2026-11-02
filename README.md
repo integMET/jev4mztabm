@@ -70,6 +70,7 @@ Both `jev4mztabm` and `python -m jev4mztabm` provide these subcommands:
 | --- | --- |
 | `metabolights` | Export public MetaboLights factor definitions and annotations |
 | `workbench` | Export public Workbench factors and sample evidence |
+| `workbench-treatments` | Export Treatment ID and Treatment Summary for all public Workbench studies |
 | `analyze` | Validate/filter accessions, count frequencies and plot distributions |
 | `jev` | Build a catalog, prepare evidence, select a pilot and propose mappings |
 | `calibrate` | Validate an acceptance policy with reviewed, study-disjoint labels |
@@ -81,6 +82,7 @@ Each command accepts `--help`. Examples:
 ```sh
 jev4mztabm metabolights --studies MTBLS1 MTBLS2 --output-dir runs/mtbls
 jev4mztabm workbench --studies ST000001 ST000004 --output-dir runs/workbench
+jev4mztabm workbench-treatments --output-dir runs/workbench-treatments
 jev4mztabm analyze --input results/factors.csv --top 255 --no-plot
 jev4mztabm analyze --input results/factors.csv \
   --accession-contains 'http://www.ebi.ac.uk/efo/' \
@@ -90,8 +92,46 @@ jev4mztabm jev run --contexts results/workbench/jev/pilot_contexts.jsonl --dry-r
 
 Paths default to the caller's current directory, not the installed package
 directory. The original root scripts and their imports remain compatible.
-Installed aliases include `metabolights-factors`, `workbench-factors`,
+Installed aliases include `metabolights-factors`, `workbench-factors`, `workbench-treatments`,
 `ontology-accessions`, `workbench-jev` and `calibrate-workbench-jev`.
+
+## Workbench treatments
+
+Export treatments for every currently public Metabolomics Workbench study:
+
+```sh
+jev4mztabm workbench-treatments
+```
+
+This discovers and deduplicates all public Study IDs, then writes
+`results/workbench/treatments/treatments.csv` with columns
+`study_id,treatment_id,treatment_summary`. The Treatment ID and Treatment Summary
+come from each study's public Treatment tab; mwTab JSON omits the Treatment ID.
+IDs are read from the source, never inferred from Study IDs.
+
+Every selected study has at least one row, including studies with missing fields
+or failed requests. Studies with several deposited treatments have one row per
+treatment, preserving each ID/summary pair. Missing fields stay blank. Check
+`treatment_status.csv` for treatment counts, missing
+metadata and retrieval errors; partial failures return exit code 1. Valid pages
+are cached for resumable reruns. Use `--refresh` to fetch them again, `--studies`
+to select accessions, or `--limit 10` for a pilot. `--output-dir`, `--workers`,
+`--interval`, `--timeout`, and `--retries` control output and requests.
+
+The same exporter is available from Python:
+
+```python
+from jev4mztabm.workbench_factors import WorkbenchClient, parse_study_ids
+from jev4mztabm.workbench_treatments import export_treatments
+
+client = WorkbenchClient()
+study_ids = parse_study_ids(client.get_json("study/study_id/ST/available"))
+failures = export_treatments(study_ids, client, "runs/workbench-treatments")
+```
+
+See the [treatment reproducibility instructions](docs/reproducibility.md#reproduce-resultsworkbenchtreatmentstreatmentscsv)
+for the recorded counts and SHA-256, a full export command, and exact offline
+regeneration from archived HTML pages.
 
 ## Jev inference and review
 
